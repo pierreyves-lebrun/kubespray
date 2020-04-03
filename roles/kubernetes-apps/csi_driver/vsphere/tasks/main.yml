@@ -17,8 +17,9 @@
     src: "{{ item }}.j2"
     dest: "{{ kube_config_dir }}/{{ item }}"
   with_items:
-    - vsphere-csi-controller.yml
-    - vsphere-csi-driver.yml
+    - vsphere-csi-controller-rbac.yml
+    - vsphere-csi-controller-ss.yml
+    - vsphere-csi-node.yml
   register: vsphere_csi_manifests
   when: inventory_hostname == groups['kube-master'][0]
   tags: vsphere-csi-driver
