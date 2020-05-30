@@ -26,8 +26,9 @@
   tags: external-vsphere
 
 - name: External vSphere Cloud Provider Interface | Create a CPI configMap
-  command: "{{ bin_dir }}/kubectl create configmap cloud-config --from-file=vsphere.conf={{ kube_config_dir }}/external-vsphere-cpi-cloud-config -n kube-system"
+  command: "{{ bin_dir }}/kubectl create configmap cloud-config --from-file=vsphere.conf={{ kube_config_dir }}/external-vsphere-cpi-cloud-config -n kube-system --dry-run -o yaml"
   when: inventory_hostname == groups['kube-master'][0]
+  register: external_vsphere_cpi_configmap_manifest
   tags: external-vsphere
 
 - name: External vSphere Cloud Controller | Apply Manifests
@@ -36,6 +37,7 @@
     filename: "{{ kube_config_dir }}/{{ item.item }}"
     state: "latest"
   with_items:
+    - "{{ external_vsphere_cpi_configmap_manifest.results }}"
     - "{{ external_vsphere_manifests.results }}"
   when:
     - inventory_hostname == groups['kube-master'][0]
